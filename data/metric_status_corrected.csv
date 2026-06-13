@@ -1,0 +1,13 @@
+﻿指标编号,指标名,状态,source,coverage_caveat
+1,活动参与用户数,available,corrected free_paid_unlock,all-platform draw-side data where Redshift has rows
+2,总抽取次数,available,corrected free_paid_unlock,all-platform draw-side data where Redshift has rows
+3,总消耗货币量,available,corrected free_paid_unlock,unlock count plus apply_type diamond/coin split
+4,勋章发放数,unavailable,not used,no medal-claim event/table; no proxy
+5,活动页PV/UV,partial,bigquery_live,BigQuery page events only; iOS/BigQuery coverage
+6,活动入口曝光UV,partial,bigquery_live,BigQuery page events only; iOS/BigQuery coverage
+7,点击率 CTR,partial,bigquery_live,BigQuery click_enter_uv / exposure_uv
+8,规则页查看率,unavailable,not used,no rule-view event/table; no proxy
+9,首抽转化率,partial,corrected free_paid_unlock + BigQuery page events,all-platform draw numerator divided by BigQuery/iOS page denominator
+10,刮奖完成率,available,corrected free_paid_unlock,all-platform draw-side data where Redshift has rows
+11,二次抽率,available,corrected free_paid_unlock,all-platform draw-side data where Redshift has rows
+12,满抽达成率,available,corrected free_paid_unlock,draw_count = 10

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>抽卡活动复盘看板</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark">抽</div>
+          <div>
+            <h1>抽卡活动复盘</h1>
+            <p>纠正版 #1-#12 指标</p>
+          </div>
+        </div>
+
+        <div class="source-note">
+          <strong>口径提示</strong>
+          <span>Draw 指标来自 free_paid_unlock；页面曝光/点击来自 BigQuery，仅覆盖 iOS/BigQuery。</span>
+        </div>
+
+        <div class="filter-stack" aria-label="看板筛选">
+          <label>
+            <span>日期范围</span>
+            <select id="dateFilter"></select>
+          </label>
+          <label>
+            <span>App版本</span>
+            <select id="appVersionFilter"></select>
+          </label>
+          <label>
+            <span>渠道</span>
+            <select id="channelFilter"></select>
+          </label>
+          <label>
+            <span>新老用户</span>
+            <select id="userTypeFilter"></select>
+          </label>
+          <label>
+            <span>付费状态</span>
+            <select id="paidStatusFilter"></select>
+          </label>
+        </div>
+
+        <button class="secondary-button" id="resetFilters" type="button">重置筛选</button>
+
+        <div class="download-list" id="downloadList" aria-label="CSV 下载"></div>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="dateRange">正在载入数据</p>
+            <h2>抽卡活动表现总览</h2>
+          </div>
+          <div class="status-strip" id="statusStrip"></div>
+        </header>
+
+        <section class="kpi-grid" id="kpiGrid" aria-label="关键指标"></section>
+
+        <section class="panel trend-panel">
+          <div class="panel-heading">
+            <div>
+              <h3>每日趋势</h3>
+              <span>活动前 7 天到下线日</span>
+            </div>
+            <div class="segmented-control" id="trendMetricControls" aria-label="趋势指标"></div>
+          </div>
+          <div class="trend-wrap">
+            <svg id="trendChart" role="img" aria-label="每日趋势图"></svg>
+          </div>
+        </section>
+
+        <section class="insight-grid">
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>核心漏斗</h3>
+                <span>曝光 → 点击 → 首抽 → 完成 → 二抽 → 满抽</span>
+              </div>
+            </div>
+            <div class="bar-list" id="funnelChart"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>货币拆分</h3>
+                <span>unlock 类型与 apply_type</span>
+              </div>
+            </div>
+            <div class="stacked-bar" id="currencyStack"></div>
+            <div class="legend-grid" id="currencyLegend"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>维度分布</h3>
+                <span>按当前筛选后的参与用户</span>
+              </div>
+              <select id="breakdownSelect" class="compact-select">
+                <option value="App版本">App版本</option>
+                <option value="渠道">渠道</option>
+                <option value="新老用户">新老用户</option>
+                <option value="付费状态">付费状态</option>
+              </select>
+            </div>
+            <div class="bar-list compact" id="breakdownChart"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <h3>抽取次数分布</h3>
+                <span>用户级 draw count bucket</span>
+              </div>
+            </div>
+            <div class="bar-list compact" id="drawBucketChart"></div>
+          </article>
+        </section>
+
+        <section class="panel metric-panel">
+          <div class="panel-heading table-heading">
+            <div>
+              <h3>#1-#12 指标状态</h3>
+              <span id="metricCount"></span>
+            </div>
+            <div class="search-wrap">
+              <input id="metricSearch" type="search" placeholder="搜索指标或备注" />
+            </div>
+          </div>
+          <div class="metric-table-wrap">
+            <table class="metric-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>指标</th>
+                  <th>状态</th>
+                  <th>当前值</th>
+                  <th>数据源 / 备注</th>
+                </tr>
+              </thead>
+              <tbody id="metricTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel detail-panel">
+          <div class="panel-heading table-heading">
+            <div>
+              <h3>每日明细</h3>
+              <span id="dailyCount"></span>
+            </div>
+          </div>
+          <div class="detail-table-wrap">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th>参与用户</th>
+                  <th>抽取次数</th>
+                  <th>免费unlock</th>
+                  <th>付费unlock</th>
+                  <th>钻石消耗</th>
+                  <th>曝光UV</th>
+                  <th>点击UV</th>
+                  <th>CTR</th>
+                </tr>
+              </thead>
+              <tbody id="dailyTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status">正在载入看板数据</div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

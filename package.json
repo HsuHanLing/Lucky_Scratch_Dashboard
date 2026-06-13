@@ -1,0 +1,9 @@
+{
+  "name": "lucky-draw-dashboard-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node preview-server.mjs 4182",
+    "deploy": "npx vercel --prod"
+  }
+}

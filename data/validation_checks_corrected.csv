@@ -1,0 +1,7 @@
+﻿check
+#2 total draw count reconciles to 1399 corrected draw rows.
+#1 participant count reconciles to 176 distinct users.
+#10/#11/#12 denominators are first-draw users by segment.
+#4/#8 are unavailable with no proxy values.
+#9 is marked partial and keeps numerator/denominator columns.
+#5/#6/#7 page metrics are present and marked partial.
