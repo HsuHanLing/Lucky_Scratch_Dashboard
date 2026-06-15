@@ -8,7 +8,7 @@ const FILES = {
   checks: "validation_checks_corrected.csv",
 };
 
-const DIMENSIONS = ["App版本", "渠道", "新老用户", "付费状态", "提现系统版本"];
+const DIMENSIONS = ["App版本", "渠道", "新老用户", "付费状态", "提现系统版本", "後台註冊提限系統版本"];
 
 const TREND_METRICS = [
   { key: "当日抽取次数", label: "抽取次数", color: "#0f8b8d" },
@@ -56,6 +56,7 @@ const state = {
     userType: "all",
     paidStatus: "all",
     withdrawSystem: "all",
+    backendWithdrawSystem: "all",
   },
 };
 
@@ -93,6 +94,7 @@ const els = {
   userTypeFilter: document.getElementById("userTypeFilter"),
   paidStatusFilter: document.getElementById("paidStatusFilter"),
   withdrawSystemFilter: document.getElementById("withdrawSystemFilter"),
+  backendWithdrawSystemFilter: document.getElementById("backendWithdrawSystemFilter"),
   resetFilters: document.getElementById("resetFilters"),
   downloadList: document.getElementById("downloadList"),
 };
@@ -193,6 +195,7 @@ function bindEvents() {
     ["userType", els.userTypeFilter],
     ["paidStatus", els.paidStatusFilter],
     ["withdrawSystem", els.withdrawSystemFilter],
+    ["backendWithdrawSystem", els.backendWithdrawSystemFilter],
   ].forEach(([key, element]) => {
     element.addEventListener("change", () => {
       state.filters[key] = element.value;
@@ -249,6 +252,7 @@ function populateFilters() {
   setSelectOptions(els.userTypeFilter, uniqueValues(data.users, "新老用户"), state.filters.userType, "全部用户");
   setSelectOptions(els.paidStatusFilter, uniqueValues(data.users, "付费状态"), state.filters.paidStatus, "全部状态");
   setSelectOptions(els.withdrawSystemFilter, uniqueValues(data.users, "提现系统版本"), state.filters.withdrawSystem, "全部提现版本");
+  setSelectOptions(els.backendWithdrawSystemFilter, uniqueValues(data.users, "後台註冊提限系統版本"), state.filters.backendWithdrawSystem, "全部後台註冊版本");
 }
 
 function setSelectOptions(select, values, selected, allLabel) {
@@ -596,6 +600,7 @@ function passesDimensionFilters(row) {
     ["userType", "新老用户"],
     ["paidStatus", "付费状态"],
     ["withdrawSystem", "提现系统版本"],
+    ["backendWithdrawSystem", "後台註冊提限系統版本"],
   ];
   return pairs.every(([stateKey, column]) => state.filters[stateKey] === "all" || row[column] === state.filters[stateKey]);
 }

@@ -8,3 +8,4 @@
 #9 is marked partial and keeps numerator/denominator columns.
 #5/#6/#7 page metrics are present and marked partial.
 "提现系统版本 uses BigQuery registration date via user_pseudo_id-to-user_id match, cutoff 2026-04-15."
+後台註冊提限系統版本 uses Redshift user_info.reg_time cutoff 2026-04-15.
