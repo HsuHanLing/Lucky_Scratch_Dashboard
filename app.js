@@ -15,7 +15,8 @@ const TREND_METRICS = [
   { key: "当日参与用户数", label: "参与用户", color: "#3f7f2d" },
   { key: "活动入口曝光UV_BigQuery", label: "曝光UV", color: "#2f6fbd" },
   { key: "点击进入UV_BigQuery", label: "点击UV", color: "#c47a18" },
-  { key: "当日钻石消耗量", label: "钻石消耗", color: "#8c5fbf" },
+  { key: "当日钻石总产生量", label: "钻石产生", color: "#8c5fbf" },
+  { key: "当日总消耗量", label: "总消耗", color: "#c6473a" },
 ];
 
 const DOWNLOAD_LABELS = {
@@ -37,6 +38,12 @@ const COLORS = {
   violet: "#8c5fbf",
   gray: "#73786f",
 };
+
+const UNLOCK_TYPES = [
+  { key: "free", label: "免费unlock", color: COLORS.teal, aliases: ["free_unlock", "freeunlock", "free"] },
+  { key: "paid", label: "付费unlock", color: COLORS.amber, aliases: ["paid_unlock", "unlock", "paid"] },
+  { key: "diamond", label: "钻石unlock", color: COLORS.blue, aliases: ["diamond_unlock", "diamondunlock", "diamond"] },
+];
 
 const state = {
   date: "all",
@@ -284,12 +291,15 @@ function renderKpis() {
 
   const participantUsers = uniqueCount(users, "user_id");
   const totalDraws = sum(draws, "draw_count");
-  const freeUnlock = draws.filter((row) => row.unlock_type === "freeunlock").length;
-  const paidUnlock = draws.filter((row) => row.unlock_type === "unlock").length;
-  const diamondConsumed = sum(draws, "diamond_consumed");
+  const freeUnlock = countUnlock(draws, "free");
+  const paidUnlock = countUnlock(draws, "paid");
+  const diamondUnlock = countUnlock(draws, "diamond");
+  const diamondGenerated = sumFirst(draws, ["diamond_generated", "diamond"]);
+  const totalConsumption = sumFirst(draws, ["total_consumption"]) || (paidUnlock + diamondUnlock) * 1500;
   const completedUsers = users.filter((row) => truthy(row.scratch_completed_user)).length;
   const repeatUsers = users.filter((row) => truthy(row.repeat_draw_user)).length;
   const exact10Users = users.filter((row) => truthy(row.draw_eq_10_user)).length;
+  const ge10Users = users.filter((row) => truthy(row.draw_ge_10_user)).length;
   const exposureUv = sum(dailyRows, "活动入口曝光UV_BigQuery");
   const clickUv = sum(dailyRows, "点击进入UV_BigQuery");
 
@@ -298,10 +308,13 @@ function renderKpis() {
     ["总抽取次数", totalDraws, `${formatNumber(safeDivide(totalDraws, participantUsers))} 次/人`],
     ["免费unlock", freeUnlock, `${formatPercent(safeDivide(freeUnlock, totalDraws))} 抽取占比`],
     ["付费unlock", paidUnlock, `${formatPercent(safeDivide(paidUnlock, totalDraws))} 抽取占比`],
-    ["钻石消耗量", diamondConsumed, `${formatNumber(draws.filter((row) => row.apply_currency_type === "diamond").length)} 次钻石抽取`],
+    ["钻石unlock", diamondUnlock, `${formatPercent(safeDivide(diamondUnlock, totalDraws))} 抽取占比`],
+    ["钻石总产生量", diamondGenerated, `${formatNumber(diamondUnlock)} 次钻石unlock`],
+    ["总消耗量", totalConsumption, "付费/钻石unlock 每次 1500"],
     ["刮奖完成率", safeDivide(completedUsers, participantUsers), `${formatNumber(completedUsers)} / ${formatNumber(participantUsers)} 用户`],
     ["二次抽率", safeDivide(repeatUsers, participantUsers), `${formatNumber(repeatUsers)} 位二抽用户`],
     ["满抽达成率", safeDivide(exact10Users, participantUsers), `${formatNumber(exact10Users)} 位等于 10 次`],
+    ["抽取≥10次用户", ge10Users, `${formatPercent(safeDivide(ge10Users, participantUsers))} 参与用户`],
     ["页面 CTR", safeDivide(clickUv, exposureUv), "BigQuery / iOS-only"],
     ["曝光 UV", exposureUv, `${formatNumber(clickUv)} 点击进入 UV`],
   ];
@@ -393,6 +406,7 @@ function renderFunnel() {
   const completedUsers = users.filter((row) => truthy(row.scratch_completed_user)).length;
   const repeatUsers = users.filter((row) => truthy(row.repeat_draw_user)).length;
   const exact10Users = users.filter((row) => truthy(row.draw_eq_10_user)).length;
+  const ge10Users = users.filter((row) => truthy(row.draw_ge_10_user)).length;
   const exposureUv = sum(dailyRows, "活动入口曝光UV_BigQuery");
   const clickUv = sum(dailyRows, "点击进入UV_BigQuery");
 
@@ -403,18 +417,14 @@ function renderFunnel() {
     ["刮奖完成用户", completedUsers, formatPercent(safeDivide(completedUsers, participantUsers))],
     ["二次抽用户", repeatUsers, formatPercent(safeDivide(repeatUsers, participantUsers))],
     ["满抽=10次用户", exact10Users, formatPercent(safeDivide(exact10Users, participantUsers))],
+    ["抽取≥10次用户", ge10Users, formatPercent(safeDivide(ge10Users, participantUsers))],
   ], COLORS.teal);
 }
 
 function renderCurrency() {
   const draws = filteredDraws();
   const total = Math.max(1, draws.length);
-  const rows = [
-    ["免费unlock", draws.filter((row) => row.unlock_type === "freeunlock").length, COLORS.teal],
-    ["付费unlock", draws.filter((row) => row.unlock_type === "unlock").length, COLORS.amber],
-    ["diamond apply_type", draws.filter((row) => row.apply_currency_type === "diamond").length, COLORS.blue],
-    ["coin apply_type", draws.filter((row) => row.apply_currency_type === "coin").length, COLORS.green],
-  ];
+  const rows = UNLOCK_TYPES.map((type) => [type.label, countUnlock(draws, type.key), type.color]);
 
   els.currencyStack.innerHTML = rows
     .map(([label, value, color]) => {
@@ -503,13 +513,15 @@ function metricDisplayValue(id, name) {
   const completedUsers = users.filter((row) => truthy(row.scratch_completed_user)).length;
   const repeatUsers = users.filter((row) => truthy(row.repeat_draw_user)).length;
   const exact10Users = users.filter((row) => truthy(row.draw_eq_10_user)).length;
+  const diamondUnlock = countUnlock(draws, "diamond");
+  const totalConsumption = sumFirst(draws, ["total_consumption"]) || (countUnlock(draws, "paid") + diamondUnlock) * 1500;
   const exposureUv = sum(dailyRows, "活动入口曝光UV_BigQuery");
   const clickUv = sum(dailyRows, "点击进入UV_BigQuery");
 
   const values = {
     1: formatNumber(participantUsers),
     2: formatNumber(draws.length),
-    3: `${formatNumber(draws.length)} unlock / ${formatNumber(sum(draws, "diamond_consumed"))} 钻石`,
+    3: `${formatNumber(totalConsumption)} 总消耗 / ${formatNumber(diamondUnlock)} 钻石unlock`,
     4: "不可用",
     5: `${formatNumber(sum(dailyRows, "点击进入PV_BigQuery"))} PV / ${formatNumber(clickUv)} UV`,
     6: formatNumber(exposureUv),
@@ -536,7 +548,9 @@ function renderDailyTable() {
           <td>${formatNumber(row["当日抽取次数"])}</td>
           <td>${formatNumber(row["当日免费unlock抽取次数"])}</td>
           <td>${formatNumber(row["当日付费unlock抽取次数"])}</td>
-          <td>${formatNumber(row["当日钻石消耗量"])}</td>
+          <td>${formatNumber(row["当日钻石unlock抽取次数"])}</td>
+          <td>${formatNumber(row["当日钻石总产生量"])}</td>
+          <td>${formatNumber(row["当日总消耗量"])}</td>
           <td>${formatNumber(row["活动入口曝光UV_BigQuery"])}</td>
           <td>${formatNumber(row["点击进入UV_BigQuery"])}</td>
           <td>${formatPercent(row["点击率CTR_BigQuery"])}</td>
@@ -595,8 +609,25 @@ function groupCount(rows, column) {
   return [...map.entries()].sort((a, b) => number(b[1]) - number(a[1]));
 }
 
+function normalizedUnlockKey(row) {
+  const raw = String(row.unlock_type || row.unlock_type_original || "").trim().toLowerCase();
+  const type = UNLOCK_TYPES.find((item) => item.aliases.includes(raw));
+  return type?.key || "paid";
+}
+
+function countUnlock(rows, key) {
+  return rows.filter((row) => normalizedUnlockKey(row) === key).length;
+}
+
 function sum(rows, column) {
   return rows.reduce((total, row) => total + number(row[column]), 0);
+}
+
+function sumFirst(rows, columns) {
+  return rows.reduce((total, row) => {
+    const column = columns.find((candidate) => row[candidate] !== undefined && row[candidate] !== "");
+    return total + (column ? number(row[column]) : 0);
+  }, 0);
 }
 
 function uniqueCount(rows, column) {

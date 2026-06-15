@@ -1,7 +1,7 @@
 ﻿指标编号,指标名,状态,source,coverage_caveat
 1,活动参与用户数,available,corrected free_paid_unlock,all-platform draw-side data where Redshift has rows
 2,总抽取次数,available,corrected free_paid_unlock,all-platform draw-side data where Redshift has rows
-3,总消耗货币量,available,corrected free_paid_unlock,unlock count plus apply_type diamond/coin split
+3,总消耗货币量,available,updated free_paid_unlock,"unlock_type cost formula only: free=0, paid/diamond=1500"
 4,勋章发放数,unavailable,not used,no medal-claim event/table; no proxy
 5,活动页PV/UV,partial,bigquery_live,BigQuery page events only; iOS/BigQuery coverage
 6,活动入口曝光UV,partial,bigquery_live,BigQuery page events only; iOS/BigQuery coverage

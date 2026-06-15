@@ -1,5 +1,7 @@
 ﻿check
 #2 total draw count reconciles to 1399 corrected draw rows.
+#2/#3 use unlock_type-only splits with no apply_type rows.
+#3 total consumption reconciles to 891000 by unlock_type formula.
 #1 participant count reconciles to 176 distinct users.
 #10/#11/#12 denominators are first-draw users by segment.
 #4/#8 are unavailable with no proxy values.

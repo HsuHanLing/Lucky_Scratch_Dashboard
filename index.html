@@ -19,7 +19,7 @@
 
         <div class="source-note">
           <strong>口径提示</strong>
-          <span>Draw 指标来自 free_paid_unlock；页面曝光/点击来自 BigQuery，仅覆盖 iOS/BigQuery。</span>
+          <span>Draw 指标来自 free_paid_unlock；货币拆分仅按 unlock_type。页面曝光/点击来自 BigQuery，仅覆盖 iOS/BigQuery。</span>
         </div>
 
         <div class="filter-stack" aria-label="看板筛选">
@@ -79,7 +79,7 @@
             <div class="panel-heading">
               <div>
                 <h3>核心漏斗</h3>
-                <span>曝光 → 点击 → 首抽 → 完成 → 二抽 → 满抽</span>
+                <span>曝光 → 点击 → 首抽 → 完成 → 二抽 → 满抽 → ≥10次</span>
               </div>
             </div>
             <div class="bar-list" id="funnelChart"></div>
@@ -89,7 +89,7 @@
             <div class="panel-heading">
               <div>
                 <h3>货币拆分</h3>
-                <span>unlock 类型与 apply_type</span>
+                <span>仅按 unlock_type</span>
               </div>
             </div>
             <div class="stacked-bar" id="currencyStack"></div>
@@ -165,7 +165,9 @@
                   <th>抽取次数</th>
                   <th>免费unlock</th>
                   <th>付费unlock</th>
-                  <th>钻石消耗</th>
+                  <th>钻石unlock</th>
+                  <th>钻石产生</th>
+                  <th>总消耗</th>
                   <th>曝光UV</th>
                   <th>点击UV</th>
                   <th>CTR</th>
