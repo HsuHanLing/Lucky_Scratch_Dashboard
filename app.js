@@ -8,7 +8,7 @@ const FILES = {
   checks: "validation_checks_corrected.csv",
 };
 
-const DIMENSIONS = ["App版本", "渠道", "新老用户", "付费状态"];
+const DIMENSIONS = ["App版本", "渠道", "新老用户", "付费状态", "提现系统版本"];
 
 const TREND_METRICS = [
   { key: "当日抽取次数", label: "抽取次数", color: "#0f8b8d" },
@@ -55,6 +55,7 @@ const state = {
     channel: "all",
     userType: "all",
     paidStatus: "all",
+    withdrawSystem: "all",
   },
 };
 
@@ -91,6 +92,7 @@ const els = {
   channelFilter: document.getElementById("channelFilter"),
   userTypeFilter: document.getElementById("userTypeFilter"),
   paidStatusFilter: document.getElementById("paidStatusFilter"),
+  withdrawSystemFilter: document.getElementById("withdrawSystemFilter"),
   resetFilters: document.getElementById("resetFilters"),
   downloadList: document.getElementById("downloadList"),
 };
@@ -190,6 +192,7 @@ function bindEvents() {
     ["channel", els.channelFilter],
     ["userType", els.userTypeFilter],
     ["paidStatus", els.paidStatusFilter],
+    ["withdrawSystem", els.withdrawSystemFilter],
   ].forEach(([key, element]) => {
     element.addEventListener("change", () => {
       state.filters[key] = element.value;
@@ -245,6 +248,7 @@ function populateFilters() {
   setSelectOptions(els.channelFilter, uniqueValues(data.users, "渠道"), state.filters.channel, "全部渠道");
   setSelectOptions(els.userTypeFilter, uniqueValues(data.users, "新老用户"), state.filters.userType, "全部用户");
   setSelectOptions(els.paidStatusFilter, uniqueValues(data.users, "付费状态"), state.filters.paidStatus, "全部状态");
+  setSelectOptions(els.withdrawSystemFilter, uniqueValues(data.users, "提现系统版本"), state.filters.withdrawSystem, "全部提现版本");
 }
 
 function setSelectOptions(select, values, selected, allLabel) {
@@ -591,6 +595,7 @@ function passesDimensionFilters(row) {
     ["channel", "渠道"],
     ["userType", "新老用户"],
     ["paidStatus", "付费状态"],
+    ["withdrawSystem", "提现系统版本"],
   ];
   return pairs.every(([stateKey, column]) => state.filters[stateKey] === "all" || row[column] === state.filters[stateKey]);
 }
