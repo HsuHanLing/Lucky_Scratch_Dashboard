@@ -19,7 +19,7 @@
 
         <div class="source-note">
           <strong>口径提示</strong>
-          <span>Draw 指标来自 free_paid_unlock；货币拆分仅按 unlock_type。页面曝光/点击来自 BigQuery ops_entry_view/click，覆盖 iOS + Android。提现系统版本按 BigQuery 注册事件日期划分：2026-04-15 前为信用分提现版本，2026-04-15 起为钻石提现版本。</span>
+          <span>Draw 指标来自 free_paid_unlock；货币拆分仅按 unlock_type。页面曝光/点击来自 BigQuery ops_entry_view/click，覆盖 iOS + Android。提现系统版本按 BigQuery 注册事件日期划分，先用 user_pseudo_id 找注册事件，再匹配回 user_id：2026-04-15 前为信用分提现版本，2026-04-15 起为钻石提现版本。</span>
         </div>
 
         <div class="filter-stack" aria-label="看板筛选">
