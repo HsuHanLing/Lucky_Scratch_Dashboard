@@ -315,7 +315,7 @@ function renderKpis() {
     ["二次抽率", safeDivide(repeatUsers, participantUsers), `${formatNumber(repeatUsers)} 位二抽用户`],
     ["满抽达成率", safeDivide(exact10Users, participantUsers), `${formatNumber(exact10Users)} 位等于 10 次`],
     ["抽取≥10次用户", ge10Users, `${formatPercent(safeDivide(ge10Users, participantUsers))} 参与用户`],
-    ["页面 CTR", safeDivide(clickUv, exposureUv), "BigQuery / iOS-only"],
+    ["页面 CTR", safeDivide(clickUv, exposureUv), "BigQuery / iOS+Android"],
     ["曝光 UV", exposureUv, `${formatNumber(clickUv)} 点击进入 UV`],
   ];
 
