@@ -7,5 +7,6 @@
 #4/#8 are unavailable with no proxy values.
 #9 is marked partial and keeps numerator/denominator columns.
 #5/#6/#7 page metrics are present and marked partial.
-"提现系统版本 uses BigQuery registration date via user_pseudo_id-to-user_id match, cutoff 2026-04-15."
-後台註冊提限系統版本 uses Redshift user_info.reg_time cutoff 2026-04-15.
+Withdrawal-system classifier matches iOS 1.9.71 and Android 1.9.98 registration-time boundaries.
+提现系统版本(firebase) uses BigQuery earliest registration-event platform/version via user_pseudo_id-to-user_id match.
+後台註冊提現系統版本 uses Redshift user_info.reg_time plus nearest BigQuery platform/version within ±24 hours.

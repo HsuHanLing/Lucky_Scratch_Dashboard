@@ -19,7 +19,7 @@
 
         <div class="source-note">
           <strong>口径提示</strong>
-          <span>Draw 指标来自 free_paid_unlock；货币拆分仅按 unlock_type。页面曝光/点击来自 BigQuery ops_entry_view/click，覆盖 iOS + Android。提现系统版本按 BigQuery 注册事件日期划分，先用 user_pseudo_id 找注册事件，再匹配回 user_id；後台註冊提限系統版本来自 Redshift user_info.reg_time：2026-04-15 前为信用分提现版本，2026-04-15 起为钻石提现版本。</span>
+          <span>Draw 指标来自 free_paid_unlock；货币拆分仅按 unlock_type。页面曝光/点击来自 BigQuery ops_entry_view/click，覆盖 iOS + Android。提现系统版本与後台註冊提現系統版本均为「注册时」平台/版本分类：前者取 BigQuery 最早注册事件（先用 user_pseudo_id 找注册事件，再映射回 user_id）的 platform + app_info.version；后者取 Redshift user_info.reg_time，并在 BigQuery 中用同一 user_id 在 reg_time ±24 小时内优先匹配注册事件，否则回退到 Enter_NewUserLandSupPage / user_engagement / screen_view 的最近事件，以该事件的 platform + app_info.version 分类。</span>
         </div>
 
         <div class="filter-stack" aria-label="看板筛选">
@@ -44,11 +44,11 @@
             <select id="paidStatusFilter"></select>
           </label>
           <label>
-            <span>提现系统版本</span>
+            <span>提现系统版本(firebase)</span>
             <select id="withdrawSystemFilter"></select>
           </label>
           <label>
-            <span>後台註冊提限系統版本</span>
+            <span>後台註冊提現系統版本</span>
             <select id="backendWithdrawSystemFilter"></select>
           </label>
         </div>
@@ -115,8 +115,8 @@
                 <option value="渠道">渠道</option>
                 <option value="新老用户">新老用户</option>
                 <option value="付费状态">付费状态</option>
-                <option value="提现系统版本">提现系统版本</option>
-                <option value="後台註冊提限系統版本">後台註冊提限系統版本</option>
+                <option value="提现系统版本(firebase)">提现系统版本(firebase)</option>
+                <option value="後台註冊提現系統版本">後台註冊提現系統版本</option>
               </select>
             </div>
             <div class="bar-list compact" id="breakdownChart"></div>

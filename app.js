@@ -8,7 +8,7 @@ const FILES = {
   checks: "validation_checks_corrected.csv",
 };
 
-const DIMENSIONS = ["App版本", "渠道", "新老用户", "付费状态", "提现系统版本", "後台註冊提限系統版本"];
+const DIMENSIONS = ["App版本", "渠道", "新老用户", "付费状态", "提现系统版本(firebase)", "後台註冊提現系統版本"];
 
 const TREND_METRICS = [
   { key: "当日抽取次数", label: "抽取次数", color: "#0f8b8d" },
@@ -251,8 +251,8 @@ function populateFilters() {
   setSelectOptions(els.channelFilter, uniqueValues(data.users, "渠道"), state.filters.channel, "全部渠道");
   setSelectOptions(els.userTypeFilter, uniqueValues(data.users, "新老用户"), state.filters.userType, "全部用户");
   setSelectOptions(els.paidStatusFilter, uniqueValues(data.users, "付费状态"), state.filters.paidStatus, "全部状态");
-  setSelectOptions(els.withdrawSystemFilter, uniqueValues(data.users, "提现系统版本"), state.filters.withdrawSystem, "全部提现版本");
-  setSelectOptions(els.backendWithdrawSystemFilter, uniqueValues(data.users, "後台註冊提限系統版本"), state.filters.backendWithdrawSystem, "全部後台註冊版本");
+  setSelectOptions(els.withdrawSystemFilter, uniqueValues(data.users, "提现系统版本(firebase)"), state.filters.withdrawSystem, "全部提现版本");
+  setSelectOptions(els.backendWithdrawSystemFilter, uniqueValues(data.users, "後台註冊提現系統版本"), state.filters.backendWithdrawSystem, "全部後台註冊版本");
 }
 
 function setSelectOptions(select, values, selected, allLabel) {
@@ -599,8 +599,8 @@ function passesDimensionFilters(row) {
     ["channel", "渠道"],
     ["userType", "新老用户"],
     ["paidStatus", "付费状态"],
-    ["withdrawSystem", "提现系统版本"],
-    ["backendWithdrawSystem", "後台註冊提限系統版本"],
+    ["withdrawSystem", "提现系统版本(firebase)"],
+    ["backendWithdrawSystem", "後台註冊提現系統版本"],
   ];
   return pairs.every(([stateKey, column]) => state.filters[stateKey] === "all" || row[column] === state.filters[stateKey]);
 }
